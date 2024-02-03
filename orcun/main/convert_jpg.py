@@ -6,7 +6,7 @@ from PIL import Image
 
 app = FastAPI()
 
-DIRECTORY= "/Users/mustafaorcunucgun/Documents/apidon/image"
+DIRECTORY= "/Users/mustafaorcunucgun/Documents/apidon/apidon_bridge/converted_images"
 os.makedirs(DIRECTORY, exist_ok=True)
 
 @app.post("/convert_jpg/")
@@ -26,7 +26,7 @@ async def convert_jpg(file: UploadFile = File(...)):
 
 @app.get("/")
 def root():
-    return {"message":"henry bienvenu"}
+    return {"message":"Python API convert jpg "}
 
 
 if __name__ == "__main__":
