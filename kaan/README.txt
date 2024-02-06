@@ -30,7 +30,7 @@ Note: Ensure you have Python 3.6+ installed on your machine.
 
     Navigate to the project directory and install the required dependencies.
        " cd <project_directory>"
-       " pip install -r requirements.txt"
+       " pip install pydantic ,uvicorn , fastapi , Pillow , Requests"
 
 3. Set Up Environment:
 
@@ -39,17 +39,19 @@ Note: Ensure you have Python 3.6+ installed on your machine.
 4. Running the Application:
 
     Run the application using Uvicorn:
-        "uvicorn main.convert_image:app --reload"
+        "uvicorn main.con_img:app --reload" 
+    Note: If you are planning to use this code in another file you should add the directory before running it (Example : This code file in "Example" directory then you shold change "uvicorn main.con_img:app --reload" to  "uvicorn Example.Kaan.main.con_img:app --reload")
     The application will be accessible at http://127.0.0.1:8000.
 
 4- Usage:
 
     Convert Images to JPEG:
 
-    To convert an image to JPEG, send a POST request to the /convert_to_jpg/ endpoint with the image URL in the request body.
+    To convert an image to JPEG, send a POST request to the http://127.0.0.1:8000/classify endpoint with the image URL in the request body.
 
         Request Example:
         doc.type (json)
+        Body:Raw
 
         {
           "image_url": "http://example.com/image.png"
@@ -57,10 +59,12 @@ Note: Ensure you have Python 3.6+ installed on your machine.
 
         Response Example:
         doc.type (json)
+        Body:Raw
 
         {
           "message": "Image converted, saved, and analyzed successfully.",
           "url": "/images/123456789_converted.jpg"
+          "results": ["example_1", "example_2" "example_3","example_4","example_5"]
         }
 
 5- Extending the Application
@@ -81,3 +85,12 @@ Note: Ensure you have Python 3.6+ installed on your machine.
 8- Contributing
     
     Contributions to improve FastAPI Image Converter & Analyser are welcome.
+
+9- Updates & Relases    
+
+    V0.1.1:
+            # First demo relase
+
+    V0.1.2:  
+            # README updated 
+            # Directory comment added for better understanding and running code

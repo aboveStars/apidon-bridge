@@ -9,24 +9,24 @@ from . import schemas
 
 app = FastAPI()
 
-os.makedirs('converted_images', exist_ok=True)
+os.makedirs('converted_images', exist_ok=True) #You can chose the destinion of storage file of images by changing this line. Example: ("Your Storage File"/converted_images) 
 
 
-@app.post("/classify/")
+@app.post("/classify")
 async def convert_image(request_data: schemas.ImageURL):
 
     image_url = request_data.image_url
 
     try: 
 
-        if not image_url or not image_url.startswith("http"): #This part can be removed from code (optionel or can be add Base64 encoder for google images)
+        if not image_url or not image_url.startswith("http"): #This part can be removed from code (Optionel) or can be add Base64 encoder for google images
             raise ValueError("Invalid image URL provided.")
         
         response = requests.get(image_url)
         if response.status_code != 200 or 'content-type' not in response.headers or not response.headers['content-type'].startswith('image/'):
             raise HTTPException(status_code=400, detail="Unable to download image or image format not supported.")
         
-        if len(response.content) > 10*1024*1024:  #Reject files larger than 10MB(Depends)
+        if len(response.content) > 10*1024*1024:  #Reject files larger than 10MB(Optionel)
             raise HTTPException(status_code=413, detail="Image size too large.")
         
         img = Image.open(BytesIO(response.content))
