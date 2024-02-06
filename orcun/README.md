@@ -48,6 +48,7 @@ Postman is usable application for sending requests to this api.
 
 
 Upon a successful request, the image is saved to the specified folder and a response with HTTP status code 200 is returned.
-In case of an unsuccesful request, HTTP status code will be throwen.
+
+In case of an unsuccesful request, HTTP status code 400 will be throwen.
 
 
