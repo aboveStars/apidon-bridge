@@ -39,7 +39,7 @@ Note: Ensure you have Python 3.6+ installed on your machine.
 4. Running the Application:
 
     Run the application using Uvicorn:
-        "uvicorn main:app --reload"
+        "uvicorn main.convert_image:app --reload"
     The application will be accessible at http://127.0.0.1:8000.
 
 4- Usage:
