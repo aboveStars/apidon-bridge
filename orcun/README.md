@@ -25,7 +25,7 @@ bash
 pip install -r requirements.txt
 Run the application locally.
 bash
-uvicorn orcun.main.convert_jpg:app --reload
+uvicorn main.convert_jpg:app --reload
 This command will start the API at the default address http://127.0.0.1:8000.
 
 USAGE
