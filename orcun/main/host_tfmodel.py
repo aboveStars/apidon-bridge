@@ -1,5 +1,6 @@
-from fastapi import FastAPI, HTTPException,Form
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 from keras.models import load_model
 import tensorflow as tf
 from PIL import Image
@@ -10,17 +11,20 @@ import requests
 app = FastAPI()
 
 
-origins = [""]
+
+origins = ['*']
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=[""],
-    allow_headers=[""],
-)
+    allow_methods=["*"],
+    allow_headers=["*"],
+) 
 
 
-
+class ImageURL(BaseModel):
+    image_url: str
 
 
 img_height = 128
@@ -49,9 +53,9 @@ async def root():
 
 
 @app.post("/classify")
-async def classify(image_url:str =Form(...)):
+async def classify(image_data: ImageURL):
     try:
-        img_array = preprocess_image(image_url)
+        img_array = preprocess_image(image_data.image_url)
         model_path = "main/arch12.h5"
         model = load_model(model_path)
     except HTTPException as e:
@@ -75,3 +79,4 @@ async def classify(image_url:str =Form(...)):
         return response_data
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error making prediction: {e}")
+
