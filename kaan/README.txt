@@ -1,96 +1,60 @@
+Image Classification API
+-This project provides a RESTful API service for image classification using a pre-trained neural network model with FastAPI.
 
----    FastAPI Image Converter & Analyser   ---
+    1-Features
+        -Predict image class from a supplied image URL.
+        -Utilize a pre-trained Keras model for prediction.
+        -Enable CORS for cross-origin AJAX requests.
+        -Run the service using Docker for easy deployment and isolation.
 
-This FastAPI application is designed to convert images to JPEG format and, optionally, analyze them using a predefined AI model. It fetches images from specified URLs, converts them to the RGB color space, and saves the JPEGs locally. When integrated with an AI model, it can also analyze the images and provide relevant results.
+    2-Requirements
+        -Python 3.11.8 is required. All required libraries are listed in requirements.txt for easy installation.
 
-1- Features:
- - Fetch images via URL
- - Convert images to JPEG format
- - Validate image content type and size constraints
- - (Optional) Analyze images using an AI model
- - Save converted images locally
+    3-Installation
+        -To install the required dependencies, run the following command:
+            -pip install -r requirements.txt
 
-2- Requirements
- - FastAPI
- - Uvicorn (for running the application)
- - Pillow (for image processing)
- - Requests (for fetching images from URLs)
- - Your custom AI model (if analysis functionality is utilized)
+    4-Usage
+        -Once the dependencies are installed, you can start the FastAPI server locally using:
+            -uvicorn main.classify:app --host 0.0.0.0 --port 8000
+        -The server will be available at http://127.0.0.1:8000.
 
-Note: Ensure you have Python 3.6+ installed on your machine.
+    5-Endpoints
+        -GET /: Returns a welcome message.
+        -POST /classify: Accepts a JSON object with an image_url field and returns image classification results.
+        
+    A- Request Format
+        -To classify an image, send a POST request to /classify with a JSON body like the following:
 
-3- Installation
+            json
+            {
+              "image_url": "http://example.com/image.jpg"
+            }
 
-1. Clone the Repository:
+    B- Response Format
+        -The API will return a JSON response containing the image classification predictions. For example:
 
-    First, clone this repository to your local machine.
-        "git clone <repository_url>"
+            json
+            {
+              "predictions": [
+                {
+                  "class_name": "Apple",
+                  "probability": "95.47%"
+                },
+                ...
+              ]
+            }
 
-2. Install Dependencies:
+    6-Docker
+        -A Dockerfile is provided to build and run the service in a Docker container.
 
-    Navigate to the project directory and install the required dependencies.
-       " cd <project_directory>"
-       " pip install pydantic ,uvicorn , fastapi , Pillow , Requests"
+            -To build the container image, use:
 
-3. Set Up Environment:
+                docker build -t image_classification_api .
 
-(Optional) If your project requires environment variables (e.g., for your AI model), set them up accordingly.
+            -To run the service in a container, execute:
 
-4. Running the Application:
-
-    Run the application using Uvicorn:
-        "uvicorn main.con_img:app --reload" 
-    Note: If you are planning to use this code in another file you should add the directory before running it (Example : This code file in "Example" directory then you shold change "uvicorn main.con_img:app --reload" to  "uvicorn Example.Kaan.main.con_img:app --reload")
-    The application will be accessible at http://127.0.0.1:8000.
-
-4- Usage:
-
-    Convert Images to JPEG:
-
-    To convert an image to JPEG, send a POST request to the http://127.0.0.1:8000/classify endpoint with the image URL in the request body.
-
-        Request Example:
-        doc.type (json)
-        Body:Raw
-
-        {
-          "image_url": "http://example.com/image.png"
-        }
-
-        Response Example:
-        doc.type (json)
-        Body:Raw
-
-        {
-          "message": "Image converted, saved, and analyzed successfully.",
-          "url": "/images/123456789_converted.jpg"
-          "results": ["example_1", "example_2" "example_3","example_4","example_5"]
-        }
-
-5- Extending the Application
-    To add image analysis functionality:
-
-        1. Import your AI model module at the top of the main.py file.
-
-        2. Uncomment the lines related to the AI model prediction in the convert_image function.
-
-6- Troubleshooting & FAQ
-
-    - Ensure image URLs are valid and accessible.
-
-    - Verify that the server running the application can access external URLs if running behind a proxy or firewall.
-
-    - Check that your AI model is correctly integrated and that its dependencies are included in requirements.txt.
-
-8- Contributing
-    
-    Contributions to improve FastAPI Image Converter & Analyser are welcome.
-
-9- Updates & Relases    
-
-    V0.1.1:
-            # First demo relase
-
-    V0.1.2:  
-            # README updated 
-            # Directory comment added for better understanding and running code
+                docker run -p 8000:8000 image_classification_api
+    7-Note:
+            -Be sure to include any necessary information for setting up and running the application, as well as any configuration details specific to your implementation. 
+            -If there are any additional steps required to train or update the model being used for image classification, include those details as well for complete documentation.
