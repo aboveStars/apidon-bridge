@@ -1,54 +1,29 @@
-PROJECT
+APIDON-BRIDGE
 
-This project is FastAPI that download the image in the url and save it as jpg to new folder(convertedImages)
+MODEL HOSTING WITH FASTAPI
+--These are apis that provide us hosting in remote servers Pytorch and Tensorflow models. 
 
-GETTING STARTED
+REQUIREMENTS
+--Python 3.8+(Recommended 3.10)
+--FastAPI
+--An HTTP client to interact with the applications (e.g., Postman)
 
-This section aims to guide you through getting a copy of the project up and running on your local machine for development and testing purposes.
+RUNNING
+--The dependencies in requirements.txt should be downloaded in your computer.
+>>pip install -r requirements.txt
+--The server can be started with the following code typed into the terminal:
+>>uvicorn hosting.main:app --reload
 
-PREREQUISITES
+POSTMAN etc. 
+--You can test the api with postman and the others.While doing this, you should use first 
+this request http://127.0.0.1:8000. You will face this answer : "message":"Welcome to APIDON".
+Then you should test the other request by changing paths.Please be aware of prefixes.
+the paths:
+root --> /
+tensorflow message --> /tensorflow
+pytorch message --> /pytorch
+tensorflow classify --> /tensorflow/classify
+pytorch classify --> /pytorch/classify
 
-A list of things you need to have installed to run the project.
-
-Raw code
-for example,
-- Python 3.8+
-- FastAPI
-- Uvicorn
-
-INSTALLING
-
-Steps to get your development environment running.
-
-Install the required packages.
-bash
-pip install -r requirements.txt
-Run the application locally.
-bash
-uvicorn main.convert_jpg:app --reload
-This command will start the API at the default address http://127.0.0.1:8000.
-
-USAGE
-
-Some basic actions you can perform with the API and examples of how to access them.
-
-Converting a JPG Image
-
-To convert a JPG image, send a JSON formatted POST request to the corresponding endpoint.
-
-http
-POST /convert_jpg/
-Content-Type: application/json
-
-{
-  "image_url": "http://exampleimage.com/image.jpg"
-}
-
-Postman is usable application for sending requests to this api.
-
-
-Upon a successful request, the image is saved to the specified folder and a response with HTTP status code 200 is returned.
-
-In case of an unsuccesful request, HTTP status code 422 will be throwen.
-
-
+PROBLEMS
+--Tensorflow model may make trouble with packages problem. So we advice Python3.10 or 3.11 version. 
