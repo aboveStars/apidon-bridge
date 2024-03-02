@@ -14,7 +14,7 @@ router = APIRouter(
     tags=['pytorch']
 )
 
-model_path = 'hosting/models/pytorch/model_23.pth'
+model_path = 'models/pytorch/model_23.pth'
 
 @router.get("/")
 def root():

@@ -1,7 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .models.tensorflow import host_tfmodel
-from .models.pytorch import host_ptmodel
+from models.tensorflow import host_tfmodel
+from models.pytorch import host_ptmodel
+from upload_file_mechanism import upload_file
+
 
 app = FastAPI()
 
@@ -15,6 +17,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+app.include_router(upload_file.router)
 app.include_router(host_tfmodel.router)
 app.include_router(host_ptmodel.router)
 
@@ -22,3 +26,5 @@ app.include_router(host_ptmodel.router)
 @app.get("/")
 def root():
     return {"message": "Welcome to APIDON"}
+
+

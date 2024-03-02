@@ -1,6 +1,4 @@
-from fastapi import FastAPI, HTTPException , Form,APIRouter
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from fastapi import HTTPException , Form,APIRouter
 from keras.models import load_model
 import tensorflow as tf
 from PIL import Image
@@ -47,7 +45,7 @@ async def root():
 async def classify(image_url: str = Form(...)):
     try:
         img_array = preprocess_image(image_url)
-        model_path = "hosting/models/tensorflow/arch12.h5"
+        model_path = "models/tensorflow/arch12.h5"
         model = load_model(model_path)
     except HTTPException as e:
 
