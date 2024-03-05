@@ -15,9 +15,14 @@ class ModelUploadRequest(BaseModel):
 
 @router.post("/")
 async def upload_model(request: ModelUploadRequest):
-    directory = os.path.dirname(request.mdl_path)
+    prefixed_path = os.path.join("/app/data", request.mdl_path)
+    directory = os.path.dirname(prefixed_path)
+
     if not directory:
         raise HTTPException(status_code=400, detail="Invalid model path provided.")
+
+    if os.path.exists(prefixed_path):
+        raise HTTPException(status_code=400, detail="Model file already exists.")
 
     async with httpx.AsyncClient() as client:
         try:
@@ -29,7 +34,8 @@ async def upload_model(request: ModelUploadRequest):
             raise HTTPException(status_code=exc.response.status_code, detail=f"Error response {exc.response.status_code} while requesting {request.mdl_url}.") from exc
 
     os.makedirs(directory, exist_ok=True)
-    async with aiofiles.open(request.mdl_path, 'wb') as file:
+    
+    async with aiofiles.open(prefixed_path, 'wb') as file:
         await file.write(response.content)
     
-    return f"Model successfully downloaded to {request.mdl_path}."
+    return f"Model successfully downloaded to {prefixed_path}."

@@ -1,11 +1,12 @@
 FROM python:3.11.8
 
-WORKDIR /src
+WORKDIR /app
 
-ADD ./ /src 
+ADD ./ /app 
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+RUN mkdir -p  /app/data 
 
 EXPOSE 8000
 
