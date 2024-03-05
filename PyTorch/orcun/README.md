@@ -47,19 +47,41 @@ This command starts a local development server that automatically reloads upon a
 
 For deploying APIDON-BRIDGE on a remote server using Docker, use the provided Dockerfile to build and run the container. The Dockerfile contains all necessary instructions to create a containerized environment for the API.
 
-### HOW TO USE DOCKERFILE
 
-Ensure Docker is installed and running on your server or local machine.
-Navigate to the project directory where the Dockerfile is located.
-Build the Docker image using the following command:
+### HOW TO USE DOCKERFILE ###
+
+Follow these steps to build and run your Docker container:
+
+Ensure Docker is installed on your machine.
+Navigate to the project directory containing the Dockerfile.
+Build the Docker image:
 ```bash
 docker build -t <container-name> .
 ```
-Once the build is complete, run the Docker container:
+Run the Docker container:
 ```bash
 docker run -d --name -p 8000:8000 <container-name>
 ```
-This command runs the API as a background service, mapping the container's port 8000 to port 8000 on the host, allowing external access to the API.
+### DEPLOYMENT ON DIGITAL OCEAN DROPLET WITH BIND-MOUNT###
+
+For deploying APIDON-BRIDGE on a Digital Ocean droplet using Docker and ensuring persistent storage through bind-mount:
+
+Prepare the Droplet:
+
+Install Docker on your Digital Ocean droplet.
+Ensure you have SSH access to the droplet.
+ Using Bind-Mount:
+
+Identify the local directory on your droplet where you want to persist data.
+Utilize Docker's -v or --mount flag to bind-mount the local directory to a directory within the container.
+Example command:
+
+```bash
+docker run -d --name <container-name> -p 8000:8000 -v /path/on/droplet:/path/in/container -it <image-name>
+```
+This ensures that data saved in /path/in/container within the container is also accessible in /path/on/droplet on your droplet, facilitating persistent storage and ease of management.
+
+
 
 ## MODEL DOWNLOAD AND STORAGE FEATURE
 
