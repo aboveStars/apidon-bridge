@@ -1,60 +1,74 @@
-Image Classification API
--This project provides a RESTful API service for image classification using a pre-trained neural network model with FastAPI.
+# Model Upload API
 
-    1-Features
-        -Predict image class from a supplied image URL.
-        -Utilize a pre-trained Torch model for prediction.
-        -Enable CORS for cross-origin AJAX requests.
-        -Run the service using Docker for easy deployment and isolation.
+This project provides a FastAPI implementation to upload models via a provided URL and save them to a specified path.
 
-    2-Requirements
-        -Python 3.11.8 is required. All required libraries are listed in requirements.txt for easy installation.
+## Project Structure
 
-    3-Installation
-        -To install the required dependencies, run the following command:
-            -pip install -r requirements.txt
+- `app/`: A directory containing the FastAPI application.
+  - `main.py`: The main FastAPI application setup with CORS and includes the routers.
+  - `routers/`: A directory containing the different routers of the FastAPI application.
+    - `upload.py`: Contains the APIRouter for the model upload mechanism.
+- `Dockerfile`: Contains the instructions to build a Docker image for the project.
+- `requirements.txt`: Lists all the Python dependencies of the project.
+- `.gitignore`: Specifies intentionally untracked files to ignore.
+- `README.md`: (This file) Includes the documentation of the project.
 
-    4-Usage
-        -Once the dependencies are installed, you can start the FastAPI server locally using:
-            -uvicorn main.classify:app --host 0.0.0.0 --port 8000
-        -The server will be available at http://127.0.0.1:8000.
+## Features
 
-    5-Endpoints
-        -GET /: Returns a welcome message.
-        -POST /classify: Accepts a JSON object with an image_url field and returns image classification results.
-        
-    A- Request Format
-        -To classify an image, send a POST request to /classify with a JSON body like the following:
+- **Model Upload**: Allows users to upload models by providing a `mdl_url` and `mdl_path`.
 
-            json
-            {
-              "image_url": "http://example.com/image.jpg"
-            }
+## Usage
 
-    B- Response Format
-        -The API will return a JSON response containing the image classification predictions. For example:
+To run the project, you will need Docker installed. Once you have Docker set up, you can build the image and run the container:
 
-            json
-            {
-              "predictions": [
-                {
-                  "class_name": "Bald Uakari",
-                  "probability": 94.86468434333801
-                },
-                ...
-              ]
-            }
+```bash
+docker build -t model-upload-api .
+docker run -p 8000:8000 model-upload-api
+```
 
-    6-Docker
-        -A Dockerfile is provided to build and run the service in a Docker container.
+After running the container, the API will be available at `http://localhost:8000`.
 
-            -To build the container image, use:
+## Endpoints
 
-                docker build -t image_classification_api .
+- POST `/upload/`: Accepts a JSON with `mdl_url` and `mdl_path` to download and save the model.
+- GET `/`: Returns a welcome message.
 
-            -To run the service in a container, execute:
+## Using the API with Postman
 
-                docker run -p 8000:8000 image_classification_api
-    7-Note:
-            -Be sure to include any necessary information for setting up and running the application, as well as any configuration details specific to your implementation. 
-            -If there are any additional steps required to train or update the model being used for image classification, include those details as well for complete documentation.
+To test the API endpoints using Postman:
+
+1. Open Postman and create a new request.
+2. Set the request method to `POST` for uploading a model.
+3. Enter the API URL which will be `http://localhost:8000/upload/` for the upload endpoint.
+4. Go to the 'Body' tab, select 'raw', and choose 'JSON' as the format.
+5. Enter the JSON data with `mdl_url` and `mdl_path` keys. For example:
+
+```json
+{
+    "mdl_url": "http://example.com/model.zip",
+    "mdl_path": "/path/to/save/model.zip"
+}
+```
+
+6. Send the request and you should receive a response from the server.
+7. For the welcome message, set the request method to `GET` and enter `http://localhost:8000/` as the URL, then send the request.
+
+## Development
+
+To set up a development environment, install the dependencies in `requirements.txt`:
+
+```bash
+pip install -r requirements.txt
+```
+
+Then, run the application using Uvicorn:
+
+```bash
+uvicorn app.main:app --reload
+```
+
+The API will be available at `http://localhost:8000`, with live reload for development.
+
+## Deployment
+
+The included Dockerfile is ready for deployment. Build the image, and create a container as shown in the usage section.
