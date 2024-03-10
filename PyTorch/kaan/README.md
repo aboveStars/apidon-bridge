@@ -1,74 +1,97 @@
-# Model Upload API
 
-This project provides a FastAPI implementation to upload models via a provided URL and save them to a specified path.
+# Model Upload and Classification API
+
+This project provides a comprehensive API built with FastAPI that allows for model upload and image classification with different machine learning frameworks.
 
 ## Project Structure
 
-- `app/`: A directory containing the FastAPI application.
-  - `main.py`: The main FastAPI application setup with CORS and includes the routers.
-  - `routers/`: A directory containing the different routers of the FastAPI application.
-    - `upload.py`: Contains the APIRouter for the model upload mechanism.
-- `Dockerfile`: Contains the instructions to build a Docker image for the project.
-- `requirements.txt`: Lists all the Python dependencies of the project.
-- `.gitignore`: Specifies intentionally untracked files to ignore.
-- `README.md`: (This file) Includes the documentation of the project.
+- `/app`: Main directory for the FastAPI application.
+  - `/models`: Contains the machine learning models organized by framework.
+    - `/pytorch_models`: Contains PyTorch model files (.pth).
+    - `/tensorflow_models`: Contains TensorFlow model files (.h5).
+    - `/tensorflowlite_models`: Contains TensorFlow Lite model files (.tflite).
+  - `/routers`: Contains the API routers defining various endpoints.
+    - `tensorflow.py`: Router for TensorFlow image classification.
+    - `tensorflow_lite.py`: Router for TensorFlow Lite image classification.
+    - `pytorch.py`: Router for PyTorch image classification.
+    - `upload.py`: Router for uploading models via URL.
+  - `main.py`: Sets up the FastAPI application, CORS, and includes the routers.
+- `Dockerfile`: Contains the instructions to build a Docker image for the API.
+- `requirements.txt`: Specifies the Python dependencies of the project.
+- `.gitignore`: Configures files and directories to be ignored by Git.
+- `README.md`: Provides documentation for the project.
 
 ## Features
 
-- **Model Upload**: Allows users to upload models by providing a `mdl_url` and `mdl_path`.
+- **Model Upload**: Endpoint to upload models by providing a URL and save path.
+- **Image Classification**: Supports classification for PyTorch, TensorFlow, and TensorFlow Lite models.
+- **Modularity**: Separate routers for each machine learning framework for easy maintenance.
 
 ## Usage
 
-To run the project, you will need Docker installed. Once you have Docker set up, you can build the image and run the container:
+To use the API, you need to have Docker installed. Build the Docker image and run it with:
 
 ```bash
-docker build -t model-upload-api .
-docker run -p 8000:8000 model-upload-api
+docker build -t model-classify-api .
+docker run -p 8000:8000 model-classify-api
 ```
 
-After running the container, the API will be available at `http://localhost:8000`.
+The API is then accessible at `http://localhost:8000`.
 
 ## Endpoints
 
-- POST `/upload/`: Accepts a JSON with `mdl_url` and `mdl_path` to download and save the model.
-- GET `/`: Returns a welcome message.
+- POST `/upload/`: Upload a model by providing `mdl_url` and `mdl_path`.
+- POST `/classify`: Classify an image using a specified model.
+- GET `/`: Returns a greeting message and indicates that the API is running.
 
 ## Using the API with Postman
 
 To test the API endpoints using Postman:
 
 1. Open Postman and create a new request.
-2. Set the request method to `POST` for uploading a model.
-3. Enter the API URL which will be `http://localhost:8000/upload/` for the upload endpoint.
-4. Go to the 'Body' tab, select 'raw', and choose 'JSON' as the format.
-5. Enter the JSON data with `mdl_url` and `mdl_path` keys. For example:
+2. Set the request method to `POST` for uploading a model or classifying an image.
+3. Enter the API URL `http://localhost:8000/upload/` for the upload endpoint or the respective classification endpoint.
+4. Go to the 'Headers' tab and set 'Content-Type' to 'application/json'.
+5. Go to the 'Body' tab, select 'raw', and choose 'JSON' as the format.
+
+6. Enter the JSON data with the required keys. For example, to upload a model:
 
 ```json
 {
-    "mdl_url": "http://example.com/model.zip",
-    "mdl_path": "/path/to/save/model.zip"
+    "mdl_url": "http://example.com/model.pth",
+    "mdl_path": "pytorch_models/model_23.pth"
 }
 ```
 
-6. Send the request and you should receive a response from the server.
-7. For the welcome message, set the request method to `GET` and enter `http://localhost:8000/` as the URL, then send the request.
+7. For classifying an image with a PyTorch model:
+
+```json
+{
+    "image_url": "http://example.com/image.jpg",
+    "id_model": "model.pth"
+}
+```
+
+8. Click on the 'Send' button to make the request. The server's response will be displayed in Postman.
 
 ## Development
 
-To set up a development environment, install the dependencies in `requirements.txt`:
+For development, set up your environment by installing dependencies from `requirements.txt`:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Then, run the application using Uvicorn:
+Run the application with Uvicorn for hot reload:
 
 ```bash
 uvicorn app.main:app --reload
 ```
 
-The API will be available at `http://localhost:8000`, with live reload for development.
+The API will be live at `http://localhost:8000`, with hot reload enabled for development.
 
 ## Deployment
 
-The included Dockerfile is ready for deployment. Build the image, and create a container as shown in the usage section.
+Utilize the included `Dockerfile` for deployment. Build the image and run a container as illustrated in the usage instructions.
+
+Enjoy your model classification and upload tasks with our API!
