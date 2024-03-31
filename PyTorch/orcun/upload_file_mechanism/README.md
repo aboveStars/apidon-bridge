@@ -21,7 +21,7 @@ This API call will download the specified model and save it to the provided dire
 
 To test the API endpoints using Postman, follow the steps below. Ensure that you select the form-data option when sending POST requests where you need to upload files or specify parameters. Details for each relevant endpoint are provided for clarity.
 
-It is convenient that using the menu in Postman application. First select "Body" option under request bar. Then by using new menu that includes "none,raw,form-data,binary" options, you can send the POST request. 
+It is convenient that using the menu in Postman application. First select 'Body' option under request bar. Then by using new menu that includes "none,raw,form-data,binary" options, you can send the POST request. 
 
 
 
