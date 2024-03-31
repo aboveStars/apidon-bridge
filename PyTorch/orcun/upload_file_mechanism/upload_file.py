@@ -17,8 +17,8 @@ async def process_file(url: str = Form(...), path: str = Form(...)):
     default_prefix = "/app/data"  # Default directory prefix where files will be saved
     # Validate file extension
     _, file_extension = os.path.splitext(filename)
-    if not file_extension in [".pth", ".h5"]:
-        raise HTTPException(status_code=422, detail="Not allowed file type. Just allowed .pth and .h5.")
+    if not file_extension in [".pth", ".h5",".tflite"]:
+        raise HTTPException(status_code=422, detail="Not allowed file type. Just allowed .pth , .tflite and .h5.")
     
     # Corrected to represent the full path where the file will be saved
     full_path = f"{default_prefix}{target_location}/{filename}"

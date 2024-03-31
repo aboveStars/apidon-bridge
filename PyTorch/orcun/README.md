@@ -6,21 +6,13 @@
   -[START THE FASTAPI SERVER WITH THIS COMMAND](###start-the-fastapi-server-with-this-command)
  -[DOCKER CONTAINER SET-UP](##docker-container-set-up)
   -[HOW TO USE DOCKERFILE](###how-to-use-dockerfile)
- -[MODEL DOWNLOAD AND STORAGE FEATURE](##model-download-and-storage-feature)
-  -[HOW TO USE](###how-to-use)
-   -[RAW CODE](####raw-code)
-   -[TESTING WITH POSTMAN](####testing-with-postman)
- -[CLASSIFY-ENDPOINTS](##classify-endpoints) 
-  -[HOW TO USE CLASSIFY](###how-to-use-classify)
-   -[RAW CODE](####raw-code-1)
-   -[TESTING WITH POSTMAN](####testing-with-postman-1)
  -[KNOWN ISSUES](##known-issues) 
  -[CONCLUSION](#conclusion) 
 
 
 
 # APIDON-BRIDGE
-APIDON-BRIDGE allows for easy deployment of Pytorch and Tensorflow models with a FastAPI backend, including features like automatic model download and save functionality.
+APIDON-BRIDGE allows for easy deployment of Pytorch,TensorFlow_Lite and Tensorflow models with a FastAPI backend, including features like automatic model download and save functionality.
 ## REQUIREMENTS
 
 
@@ -83,67 +75,6 @@ This ensures that data saved in /path/in/container within the container is also 
 
 
 
-## MODEL DOWNLOAD AND STORAGE FEATURE
-
-APIDON-BRIDGE now includes an API endpoint that allows you to download your Pytorch or Tensorflow model files and save them to a specified directory on your computer. This feature facilitates the management and deployment of machine learning models by providing an automated process for handling model files.
-
-### HOW TO USE
-
-To utilize this feature, make a request to the following endpoint, replacing <model_type> with either pytorch or tensorflow, and specify your desired save location in the request body. 
-
-The endpoint:"http://127.0.0.1:8000/upload_model"
-
-#### RAW CODE
-```bash
-curl --location 'http://127.0.0.1:8000/upload_model' \
---form 'url="<your_url>"' \
---form 'path="<your_path>"'
-```
-This API call will download the specified model and save it to the provided directory path on your machine.
-
-#### TESTING WITH POSTMAN
-
-To test the API endpoints using Postman, follow the steps below. Ensure that you select the form-data option when sending POST requests where you need to upload files or specify parameters. Details for each relevant endpoint are provided for clarity.
-
-It is convenient that using the menu in Postman application. First select "Body" option under request bar. Then by using new menu that includes "none,raw,form-data,binary" options, you can send the POST request. 
-
-
-
-For the /upload_model endpoint, use the form-data option in Postman. You need to specify the following parameters:
-
-url: The URL where the model file is located.
-path: The local directory path where you want to save the model file.
-
-Example cURL command:
-
-```bash
-curl --location 'http://127.0.0.1:8000/upload_model' \
---form 'url="https://yourdomain.com/upload/model.pth"' \
---form 'path="/local/path/to/save/model.pth"'
-```
-
-## CLASSIFY ENDPOINTS
-
-### HOW TO USE CLASSIFY
-
-You should send the post request the following endpoint by using postman or raw code and you will take predictions of image of models  
-The endpoint:"http://127.0.0.1:8000"
-
-
-#### RAW CODE
-Example cURL template for classify endpoints:
-
-```bash
-curl --location 'http://127.0.0.1:8000/pytorch/classify' \
---form 'image_url="https://yourdomain.com/path/to/image.png"'
-```
-Be sure to replace pytorch with tensorflow in the URL if you are using the TensorFlow model.
-
-
-
-#### TESTING WITH POSTMAN 
-
-For the /pytorch/classify ,/tensorflow/classify, /tensorflow_lite/classify endpoints, when sending a POST request, you should use the form-data option and include the parameter named **image_url**. This parameter should contain the URL of the image you wish to classify. When using Postman ,you should follow the same steps with Model Downloading and Storage Feature.
 
 
 

@@ -42,11 +42,11 @@ async def root():
 
 
 @router.post("/classify")
-async def classify(image_url: str = Form(...)):
+async def classify(image_url: str = Form(...),model_path_url:str = Form(...)):
     try:
         img_array = preprocess_image(image_url)
-        model_path = "models/tensorflow/arch12.h5"
-        model = load_model(model_path)
+       # model_path = "models/tensorflow/arch12.h5"
+        model = load_model(f"/app/data{model_path_url}")
     except HTTPException as e:
 
         raise e
