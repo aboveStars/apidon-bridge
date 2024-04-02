@@ -40,7 +40,7 @@ The API is then accessible at `http://localhost:8000`.
 
 ## Endpoints
 
-- POST `/upload/`: Upload a model by providing `mdl_url` and `mdl_path`.
+- POST `/upload/`: Upload a model by providing `model_url` and `model_path`.
 - POST `/classify`: Classify an image using a specified model.
 - GET `/`: Returns a greeting message and indicates that the API is running.
 
@@ -58,8 +58,8 @@ To test the API endpoints using Postman:
 
 ```json
 {
-    "mdl_url": "http://example.com/model.pth",
-    "mdl_path": "pytorch_models/model_23.pth"
+    "model_url": "http://example.com/model.pth",
+    "model_path": "pytorch_models/model_23.pth"
 }
 ```
 
@@ -68,7 +68,7 @@ To test the API endpoints using Postman:
 ```json
 {
     "image_url": "http://example.com/image.jpg",
-    "id_model": "model.pth"
+    "model_path_url": "model_23.pth"
 }
 ```
 

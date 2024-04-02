@@ -15,14 +15,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(tensorflow.router)
-app.include_router(pytorch.router)
-app.include_router(tensorflow_lite.router)
 app.include_router(upload.router)
 
 class ClassifyRequest(BaseModel):
     image_url: str
-    id_model: str
+    model_path_url: str
 
 @app.get("/")
 def root():
@@ -30,11 +27,11 @@ def root():
 
 @app.post("/classify")
 async def classify(request: ClassifyRequest):
-    if request.id_model.endswith('.h5'):
+    if request.model_path_url.endswith('.h5'):
         return await tensorflow.classify(request)
-    elif request.id_model.endswith('.pth'):
+    elif request.model_path_url.endswith('.pth'):
         return await pytorch.classify(request)
-    elif request.id_model.endswith('.tflite'):
+    elif request.model_path_url.endswith('.tflite'):
         return await tensorflow_lite.classify(request)
     else:
         raise HTTPException(status_code=400, detail="Unsupported model extension. Please provide a model_id with .h5, .pth, or .tflite extension.")
