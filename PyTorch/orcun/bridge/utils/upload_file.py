@@ -5,12 +5,12 @@ import aiofiles
 import os
 import certifi
 
-router = APIRouter(
-    prefix="/upload_model",  # Prefix for all endpoints within this router
-    tags=['upload_model']  # Tags for grouping endpoints in the documentation
-)
+#router = APIRouter(
+  #  prefix="/upload_model",  # Prefix for all endpoints within this router
+ #   tags=['upload_model']  # Tags for grouping endpoints in the documentation
+#)
 
-@router.post("/")
+#@router.post("/")
 async def process_file(url: str = Form(...), path: str = Form(...)):
     # Split the path to get the directory and the filename
     target_location, filename = os.path.split(path)
@@ -48,4 +48,4 @@ async def process_file(url: str = Form(...), path: str = Form(...)):
         raise HTTPException(status_code=500, detail=f"Error saving file: {e}")
 
     # Return a success message with the path where the file is saved
-    return {"message": f"File processed and saved to /apidon{target_location}/{filename}"}
+    return {"message": f"File processed and saved to {target_location}/{filename}"}

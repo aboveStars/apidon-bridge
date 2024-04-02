@@ -31,7 +31,7 @@ classes = [
 def root():
     return {"message": "This is the PyTorch model."}
 
-@router.post("/classify")
+
 async def classify(image_url: str = Form(...),model_path_url:str = Form(...)):
     # Model loading and initialization
     model = models.resnet18(pretrained=False)

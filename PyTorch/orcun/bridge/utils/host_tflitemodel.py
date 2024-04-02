@@ -26,11 +26,6 @@ class_names = ['abraham_grampa_simpson', 'agnes_skinner', 'apu_nahasapeemapetilo
                'waylon_smithers'] 
 
 
-@router.get("/")
-def root_tensorflow_lite():
-    return {"message": "Welcome to the TensorFlow Lite model API!"}
-
-@router.post("/classify/")
 async def classify(image_url: str = Form(...),model_path_url:str = Form(...)):
     try:
         # Preprocess the image
