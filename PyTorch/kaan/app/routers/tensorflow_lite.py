@@ -1,5 +1,6 @@
 from fastapi import HTTPException
 from pydantic import BaseModel
+from keras.models import load_model
 import tensorflow as tf
 import numpy as np
 from PIL import Image
@@ -51,9 +52,9 @@ async def classify(request: ClassificationRequest):
     except HTTPException as e:
         raise e
 
-    model_dir = os.path.join("app", "models", "tensorflowlite_models")
+    model_dir = os.path.join("/app", "data")
     model_path = os.path.join(model_dir, request.model_path_url)
-    
+        
     if not os.path.isfile(model_path):
         raise HTTPException(status_code=404, detail=f"Model file does not exist at {model_path}")
 

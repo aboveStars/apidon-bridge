@@ -29,7 +29,7 @@ def initialize_model(model_path_url, num_classes=10):
     model = models.resnet18(pretrained=False)
     num_ftrs = model.fc.in_features
     model.fc = nn.Linear(num_ftrs, num_classes)
-    model_path = f"app/models/pytorch_models/{model_path_url}"
+    model_path = f"/app/data/{model_path_url}"
 
     try:
         state_dict = torch.load(model_path, map_location=torch.device('cpu'))

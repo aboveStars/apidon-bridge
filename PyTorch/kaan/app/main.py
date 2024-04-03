@@ -34,4 +34,4 @@ async def classify(request: ClassifyRequest):
     elif request.model_path_url.endswith('.tflite'):
         return await tensorflow_lite.classify(request)
     else:
-        raise HTTPException(status_code=400, detail="Unsupported model extension. Please provide a model_id with .h5, .pth, or .tflite extension.")
+        raise HTTPException(status_code=400, detail="Unsupported model extension. Please provide a model path with .h5, .pth, or .tflite extension.")

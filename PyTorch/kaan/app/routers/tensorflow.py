@@ -33,8 +33,7 @@ def preprocess_image(url):
 async def classify(request: ClassificationRequest):
     try:
         img_array = preprocess_image(request.image_url)
-        model_path = f"app/models/tensorflow_models/{request.model_path_url}"
-        model = load_model(model_path)
+        model = load_model(f"/app/data/{request.model_path_url}")
     except HTTPException as e:
         raise e
     except Exception as e:
