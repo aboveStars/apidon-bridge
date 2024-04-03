@@ -25,14 +25,8 @@ class_names = ['abraham_grampa_simpson', 'agnes_skinner', 'apu_nahasapeemapetilo
                'ralph_wiggum', 'selma_bouvier', 'sideshow_bob', 'sideshow_mel', 'snake_jailbird', 
                'waylon_smithers'] 
 
-TF_MODEL_FILE_PATH = "models/tensorflow_lite/model.tflite"
 
-@router.get("/")
-def root_tensorflow_lite():
-    return {"message": "Welcome to the TensorFlow Lite model API!"}
-
-@router.post("/classify/")
-async def classify_image(image_url: str = Form(...)):
+async def classify(image_url: str = Form(...),model_path_url:str = Form(...)):
     try:
         # Preprocess the image
         img_array = preprocess_image_tflite(image_url)
@@ -45,7 +39,7 @@ async def classify_image(image_url: str = Form(...)):
 
     try:
         # Load and use the TensorFlow Lite model
-        interpreter = tf.lite.Interpreter(model_path=TF_MODEL_FILE_PATH)
+        interpreter = tf.lite.Interpreter(f"/app/data{model_path_url}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred while loading the model: {e}")
 

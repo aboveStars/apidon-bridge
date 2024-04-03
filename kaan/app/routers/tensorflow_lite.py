@@ -1,5 +1,6 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import HTTPException
 from pydantic import BaseModel
+from keras.models import load_model
 import tensorflow as tf
 import numpy as np
 from PIL import Image
@@ -7,14 +8,9 @@ from io import BytesIO
 import requests
 import os
 
-router = APIRouter(
-    prefix="/tensorflow-lite",
-    tags=['TensorFlow Lite Model']
-)
-
 class ClassificationRequest(BaseModel):
     image_url: str
-    id_model: str
+    model_path_url: str
 
 img_height = 180
 img_width = 180
@@ -50,16 +46,15 @@ def preprocess_image_tflite(image_url):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred while processing image: {str(e)}")
 
-@router.post("/classify")
 async def classify(request: ClassificationRequest):
     try:
         img_array = preprocess_image_tflite(request.image_url)
     except HTTPException as e:
         raise e
 
-    model_dir = os.path.join("app", "models", "tensorflowlite_models")
-    model_path = os.path.join(model_dir, request.id_model)
-    
+    model_dir = os.path.join("/app", "data")
+    model_path = os.path.join(model_dir, request.model_path_url)
+        
     if not os.path.isfile(model_path):
         raise HTTPException(status_code=404, detail=f"Model file does not exist at {model_path}")
 

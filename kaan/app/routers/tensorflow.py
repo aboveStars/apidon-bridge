@@ -1,4 +1,4 @@
-from fastapi import  HTTPException, APIRouter
+from fastapi import  HTTPException
 from pydantic import BaseModel
 from keras.models import load_model
 import tensorflow as tf
@@ -6,14 +6,9 @@ from PIL import Image
 from io import BytesIO
 import requests
 
-
-router = APIRouter(
-    prefix="/tensorflow",
-    tags=['Tensorflow Model']
-)
 class ClassificationRequest(BaseModel):
     image_url: str
-    id_model: str
+    model_path_url: str
 
 
 img_height = 128
@@ -38,8 +33,7 @@ def preprocess_image(url):
 async def classify(request: ClassificationRequest):
     try:
         img_array = preprocess_image(request.image_url)
-        model_path = f"app/models/tensorflow_models/{request.id_model}"
-        model = load_model(model_path)
+        model = load_model(f"/app/data/{request.model_path_url}")
     except HTTPException as e:
         raise e
     except Exception as e:

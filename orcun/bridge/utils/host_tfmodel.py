@@ -14,8 +14,6 @@ router = APIRouter(
 
 
 
-
-
 img_height = 128
 img_width = 128
 class_names = ['Apple', 'Banana', 'Grape', 'Mango', 'Strawberry']
@@ -36,17 +34,12 @@ def preprocess_image(url):
         raise HTTPException(status_code=500, detail=f"Error processing image: {e}")
 
 
-@router.get("/")
-async def root():
-    return {"message": "This is the TensorFlow Model"}
 
-
-@router.post("/classify")
-async def classify(image_url: str = Form(...)):
+async def classify(image_url: str = Form(...),model_path_url:str = Form(...)):
     try:
         img_array = preprocess_image(image_url)
-        model_path = "models/tensorflow/arch12.h5"
-        model = load_model(model_path)
+       # model_path = "models/tensorflow/arch12.h5"
+        model = load_model(f"/app/data{model_path_url}")
     except HTTPException as e:
 
         raise e

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import HTTPException
 from pydantic import BaseModel
 from PIL import Image
 from io import BytesIO
@@ -7,11 +7,6 @@ import torch
 import torchvision.transforms as transforms
 import torchvision.models as models
 import torch.nn as nn
-
-router = APIRouter(
-    prefix="/pytorch",
-    tags=['PyTorch Model']
-)
 
 classes = [
     "Mantled Howler",
@@ -28,13 +23,13 @@ classes = [
 
 class ClassificationRequest(BaseModel):
     image_url: str
-    id_model: str
+    model_path_url: str
 
-def initialize_model(id_model, num_classes=10):
+def initialize_model(model_path_url, num_classes=10):
     model = models.resnet18(pretrained=False)
     num_ftrs = model.fc.in_features
     model.fc = nn.Linear(num_ftrs, num_classes)
-    model_path = f"app/models/pytorch_models/{id_model}"  # Model dosyasının yolunu model_id'den al
+    model_path = f"/app/data/{model_path_url}"
 
     try:
         state_dict = torch.load(model_path, map_location=torch.device('cpu'))
@@ -65,7 +60,7 @@ def preprocess_image(image_url):
             transforms.Normalize(mean, std)
         ])
 
-        image = image_transforms(image).unsqueeze(0)  # Görüntüyü tensora dönüştür ve normalize et
+        image = image_transforms(image).unsqueeze(0)
         return image
 
     except requests.exceptions.RequestException as e:
@@ -91,9 +86,8 @@ def classify_image(image, model):
 
         return top_predictions
 
-@router.post("/classify")
 async def classify(request: ClassificationRequest):
     image = preprocess_image(request.image_url)
-    model = initialize_model(request.id_model)  # Her çağrıda modeli başlat
-    top_predictions = classify_image(image, model)  # Sınıflandırma yap
+    model = initialize_model(request.model_path_url)
+    top_predictions = classify_image(image, model)
     return {"top_predictions": top_predictions}

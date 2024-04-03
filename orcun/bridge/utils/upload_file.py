@@ -5,20 +5,20 @@ import aiofiles
 import os
 import certifi
 
-router = APIRouter(
-    prefix="/upload_model",  # Prefix for all endpoints within this router
-    tags=['upload_model']  # Tags for grouping endpoints in the documentation
-)
+#router = APIRouter(
+  #  prefix="/upload_model",  # Prefix for all endpoints within this router
+ #   tags=['upload_model']  # Tags for grouping endpoints in the documentation
+#)
 
-@router.post("/")
+#@router.post("/")
 async def process_file(url: str = Form(...), path: str = Form(...)):
     # Split the path to get the directory and the filename
     target_location, filename = os.path.split(path)
     default_prefix = "/app/data"  # Default directory prefix where files will be saved
     # Validate file extension
     _, file_extension = os.path.splitext(filename)
-    if not file_extension in [".pth", ".h5"]:
-        raise HTTPException(status_code=422, detail="Not allowed file type. Just allowed .pth and .h5.")
+    if not file_extension in [".pth", ".h5",".tflite"]:
+        raise HTTPException(status_code=422, detail="Not allowed file type. Just allowed .pth , .tflite and .h5.")
     
     # Corrected to represent the full path where the file will be saved
     full_path = f"{default_prefix}{target_location}/{filename}"
@@ -48,4 +48,4 @@ async def process_file(url: str = Form(...), path: str = Form(...)):
         raise HTTPException(status_code=500, detail=f"Error saving file: {e}")
 
     # Return a success message with the path where the file is saved
-    return {"message": f"File processed and saved to /apidon{target_location}/{filename}"}
+    return {"message": f"File processed and saved to {target_location}/{filename}"}
