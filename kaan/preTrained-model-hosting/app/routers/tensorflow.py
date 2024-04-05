@@ -89,7 +89,7 @@ def combine_predictions(image_url):
 
     return formatted_predictions
 
-@router.post("/classify/")
+@router.post("/tfclassify/")
 async def classify_image(request: ImageUrl):
     try:
         predictions = combine_predictions(request.image_url)
