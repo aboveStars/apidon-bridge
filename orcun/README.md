@@ -13,14 +13,12 @@
     - [CLASSIFY](#classify)
 
 ## APIDON-BRIDGE
-APIDON-BRIDGE enables easy deployment of PyTorch, TensorFlow Lite, and TensorFlow models with a FastAPI backend, featuring automatic model download and save functionality.
+APIDON BRIDGE enables easy deployment of PyTorch, TensorFlow Lite,TensorFlow and pretrained TensorFlow models with a FastAPI backend, featuring automatic model download and save functionality.
 
-## API FEATURES
 
-In this section, you can find the API features provided by APIDON-BRIDGE.
 
 ### MODEL DOWNLOAD AND STORAGE
-APIDON-BRIDGE now includes an API endpoint that allows you to download PyTorch or TensorFlow model files and save them to a specified directory on your computer.
+APIDON-BRIDGE now includes an API endpoint that allows you to download model files and save them to a specified directory on your computer.
 
 Endpoint: *http://127.0.0.1:8000/upload_model*
 When sending a POST request to the /upload_model endpoint, include the following parameters:
@@ -38,6 +36,13 @@ When sending a POST request to the /classify endpoint, include the following par
 *model_path_url: The URL where the model file is located.*
 *model_extension: The extension of the model file.*
 *image_url: The URL of the image you wish to classify.*
+
+To make predictions on *pretrained classification* models, you should send a POST request to another endpoint.
+Pretrained model endpoint: *http://127.0.0.1:8000/pretrained_model_classify* 
+
+Parameters:
+*image_url : The URL of the image you wish to classify.*
+
 
 
 ## REQUIREMENTS

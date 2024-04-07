@@ -4,6 +4,7 @@ from bridge.utils import host_tfmodel
 from bridge.utils import host_ptmodel
 from bridge.utils import upload_file
 from bridge.utils import host_tflitemodel
+import bridge.utils.ForAPI as ForAPI
 
 app = FastAPI()
 
@@ -35,7 +36,7 @@ async def classify(image_url:str = Form(...),model_path_url:str = Form(...),mode
     elif model_extension ==".tflite":
         return await host_tflitemodel.classify(image_url,model_path_url)
     else:
-        raise HTTPException(status_code=400, detail="Unsupported model ID. Please provide a valid model_id with .h5 or .pth or .tflite extension.")
+        raise HTTPException(status_code=400, detail="Unsupported model ID, Please provide a valid model_id with .h5 or .pth or .tflite extension.")
 
 @app.post("/upload_model")
 async def upload_models(url:str = Form(...),path:str = Form(...)):
@@ -44,4 +45,12 @@ async def upload_models(url:str = Form(...),path:str = Form(...)):
     except Exception as e:
         print(e)
 
-
+@app.post("/pretrained_model_classify/")
+async def classify_image(image_url:str = Form(...)):
+    try:
+        predictions = ForAPI.combine_predictions(image_url)
+        return {"Combined Predictions": predictions}
+    except HTTPException as http_exc:
+        raise http_exc
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
