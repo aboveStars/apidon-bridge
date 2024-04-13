@@ -13,12 +13,7 @@ from io import BytesIO
 import numpy as np
 
 
-router = APIRouter(
-    prefix="/classify",
-    tags=['classify']
-)
-class ImageUrl(BaseModel):
-    image_url: str
+
 
 resnet_model = ResNet50(weights="imagenet")
 vgg_model = VGG16(weights="imagenet")

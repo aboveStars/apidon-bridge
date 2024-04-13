@@ -37,9 +37,9 @@ When sending a POST request to the /classify endpoint, include the following par
 *model_extension: The extension of the model file.*
 *image_url: The URL of the image you wish to classify.*
 
-To make predictions on *pretrained classification* models, you should send a POST request to another endpoint.
-Pretrained model endpoint: *http://127.0.0.1:8000/pretrained_model_classify* 
-
+To make predictions on *pretrained tensorflow and pytorch classification* models, you should send a POST request to another endpoint.
+Pretrained model endpoint: *http://127.0.0.1:8000/pretrained_tensorflow_classify* 
+                           *http://127.0.0.1:8000/pretrained_pytorch_classify*
 Parameters:
 *image_url : The URL of the image you wish to classify.*
 

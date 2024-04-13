@@ -20,9 +20,13 @@ This repository provides a unified API for hosting and classifying images using 
   - `requirements.txt`: Specifies the dependencies for the custom model hosting service.
 
 - `/preTrained-model-hosting`: Dedicated to serving pre-trained models.
-  - `/app`: Simplified FastAPI application setup.
-    - `/routers`: Contains the router for pre-trained model classification.
-      - `tensorflow.py`: Router for pre-trained TensorFlow image classification.
+  - `/app`: Main directory for the FastAPI application.
+    - `/routers`: Contains the API routers defining various endpoints.
+      - `/pytorch`: Router for PyTorch image classification.
+        - `pytorch.py`: Defines the endpoint for image classification using PyTorch models.
+        - `imagenet_class_index.json`: Contains the ImageNet class index for PyTorch model predictions.
+      - `/tensorflow`: Router for TensorFlow image classification (To be implemented).
+        - `tensorflow.py`: Defines the endpoint for image classification using TensorFlow models.
     - `main.py`: FastAPI application initializer for the pre-trained models service.
   - `Dockerfile`: Docker configuration for the `preTrained-model-hosting` service.
   - `requirements.txt`: Specifies the dependencies for the pre-trained model hosting service.
@@ -33,13 +37,14 @@ This repository provides a unified API for hosting and classifying images using 
 ## Features
 
 - **Custom Model Hosting**: The `/model-hosting` service allows users to upload and classify images using their own ML models.
-- **Pre-Trained Model Hosting**: The `/preTrained-model-hosting` service offers image classification using pre-trained TensorFlow models.
+- **Pre-Trained Model Hosting**: The `/preTrained-model-hosting`service offers image classification using pre-trained TensorFlow and Pytorch models.
 
 ## Endpoints
 
 - POST `/upload/`: Upload a model by providing `model_url` and `model_path`.
-- POST `/classify`: Classify an image using a specified model.
-- POST `/tfclassify`: Classify an image using a specified pre-trained TensorFlow model.
+- POST `/classify/`: Classify an image using a specified model.
+- POST `/classify/tfclassify/`: Classify an image using a specified pre-trained TensorFlow model.
+- Post `/classify/ptclassify/`: Classify an image using a specified pre-trained Pytorch model.
 - GET `/`: Returns a greeting message and indicates that the API is running.
 
 ## Using the API with Postman
@@ -48,7 +53,7 @@ To test the API endpoints using Postman:
 
 1. Open Postman and create a new request.
 2. Set the request method to `POST` for uploading a model or classifying an image.
-3. Enter the API URL `http://localhost:8000/upload/` for the upload endpoint or `http://localhost:8000/classify/` for the classification endpoint or `http://localhost:8000/tfclassify/` for the preTrained model classification endpoint.
+3. Enter the API URL `http://localhost:8000/upload/` for the upload endpoint or `http://localhost:8000/classify/` for the classification endpoint or `http://localhost:8000/classify/tfclassify/` for the preTrained TensorFlow model classification endpoint or `http://localhost:8000/classify/ptclassify/` for the preTrained Pytorch model classification endpoint.
 4. Go to the 'Headers' tab and set 'Content-Type' to 'application/json'.
 5. Go to the 'Body' tab, select 'raw', and choose 'JSON' as the format.
 
@@ -78,7 +83,15 @@ To test the API endpoints using Postman:
 }
 ```
 
-9. Click on the 'Send' button to make the request. The server's response will be displayed in Postman.
+9. For classifying an image with a preTrained pytorch model:
+
+```json
+{
+    "image_url": "http://example.com/image.jpg",
+}
+```
+
+10. Click on the 'Send' button to make the request. The server's response will be displayed in Postman.
 
 ## Usage
 

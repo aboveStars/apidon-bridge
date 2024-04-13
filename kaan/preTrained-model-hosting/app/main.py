@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
-from .routers import tensorflow
+from .routers.tensorflow import tensorflow
+from .routers.pytorch import pytorch
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -16,10 +16,7 @@ app.add_middleware(
 )
 
 app.include_router(tensorflow.router)
-
-class ClassifyRequest(BaseModel):
-    image_url: str
-    model_path_url: str
+app.include_router(pytorch.router)
 
 @app.get("/")
 def root():
