@@ -1,3 +1,4 @@
+
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from keras.applications.resnet50 import ResNet50, preprocess_input as preprocess_resnet
@@ -11,7 +12,6 @@ from PIL import Image, UnidentifiedImageError
 import requests
 from io import BytesIO
 import numpy as np
-from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
 
@@ -62,17 +62,15 @@ def combine_predictions(image_url):
         raise HTTPException(status_code=400, detail=f"Image request failed: {str(e)}")
 
     all_preds = []
-    with ThreadPoolExecutor() as executor:
-        futures = [executor.submit(predict_image, img_data, model, model_name) for model, model_name in zip(
-            [resnet_model, vgg_model, mobilenet_model, nasnet_model, densenet_model],
-            ["resnet", "vgg", "mobilenet", "nasnet", "densenet"]
-        )]
-        for future in as_completed(futures):
-            try:
-                preds = future.result()
-                all_preds.extend(preds)
-            except ValueError:
-                continue
+    for model, model_name in zip(
+        [resnet_model, vgg_model, mobilenet_model, nasnet_model, densenet_model],
+        ["resnet", "vgg", "mobilenet", "nasnet", "densenet"]
+    ):
+        try:
+            preds = predict_image(img_data, model, model_name)
+            all_preds.extend(preds)
+        except ValueError as e:
+            continue
 
     if not all_preds:
         raise HTTPException(status_code=500, detail="All model predictions failed.")

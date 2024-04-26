@@ -58,10 +58,9 @@ async def upload_models(url: str = Form(...), path: str = Form(...), api_key: st
         print(e)
 
 @app.post("/pretrained_tensorflow_classify/")
-async def tf_classify_image(image_url: str = Form(...), api_key: str = Depends(validate_api_key)):
+async def tf_classify_image(image_url:str = Form(...), api_key: str = Depends(validate_api_key)):
     try:
-        loop = asyncio.get_event_loop()
-        predictions = await loop.run_in_executor(ThreadPoolExecutor(), pretrained_tensorflow.combine_predictions, image_url)
+        predictions = pretrained_tensorflow.combine_predictions(image_url)
         return {"Combined Predictions": predictions}
     except HTTPException as http_exc:
         raise http_exc
