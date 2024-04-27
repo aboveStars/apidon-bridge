@@ -11,7 +11,6 @@ class APIKeyMiddleware(BaseHTTPMiddleware):
         self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
         api_key = request.headers.get("API_KEY")
-        print(SECRET_API_KEY)
         if api_key is None:
             return JSONResponse(status_code=401, content={"detail": "Missing API Key"})
         
