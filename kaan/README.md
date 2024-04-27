@@ -15,8 +15,11 @@ This repository provides a unified API for hosting and classifying images using 
       - `tensorflow_lite.py`: Router for TensorFlow Lite image classification.
       - `pytorch.py`: Router for PyTorch image classification.
       - `upload.py`: Router for uploading models via URL.
+    - `/utilities`: Contains the API utilities.
+      - `middleware.py`: A middleware component that handles API key authentication to secure access to the API endpoints.
     - `main.py`: Sets up the FastAPI application and includes the routers.
   - `Dockerfile`: Docker configuration for the `model-hosting` service.
+  - `dockerfile-compose`: Docker configuration for the `model-hosting` service and security.
   - `requirements.txt`: Specifies the dependencies for the custom model hosting service.
 
 - `/preTrained-model-hosting`: Dedicated to serving pre-trained models.
@@ -27,8 +30,11 @@ This repository provides a unified API for hosting and classifying images using 
         - `imagenet_class_index.json`: Contains the ImageNet class index for PyTorch model predictions.
       - `/tensorflow`: Router for TensorFlow image classification (To be implemented).
         - `tensorflow.py`: Defines the endpoint for image classification using TensorFlow models.
+    - `/utilities`: Contains the API utilities.
+      - `middleware.py`: A middleware component that handles API key authentication to secure access to the API endpoints.
     - `main.py`: FastAPI application initializer for the pre-trained models service.
   - `Dockerfile`: Docker configuration for the `preTrained-model-hosting` service.
+  - `dockerfile-compose`: Docker configuration for the `preTrained-model-hosting` service and security.
   - `requirements.txt`: Specifies the dependencies for the pre-trained model hosting service.
 
 - `/.gitignore`: Configures files and directories to be ignored by Git for the entire repository.
@@ -56,8 +62,9 @@ To test the API endpoints using Postman:
 3. Enter the API URL `http://localhost:8000/upload/` for the upload endpoint or `http://localhost:8000/classify/` for the classification endpoint or `http://localhost:8000/classify/tfclassify/` for the preTrained TensorFlow model classification endpoint or `http://localhost:8000/classify/ptclassify/` for the preTrained Pytorch model classification endpoint.
 4. Go to the 'Headers' tab and set 'Content-Type' to 'application/json'.
 5. Go to the 'Body' tab, select 'raw', and choose 'JSON' as the format.
+6. Go to the 'Headers' tab and set a key as 'API_KEY' and a value 'YOUR_API_KEY' for verification.
 
-6. Enter the JSON data with the required keys. For example, to upload a model:
+7. Enter the JSON data with the required keys. For example, to upload a model:
 
 ```json
 {
@@ -66,7 +73,7 @@ To test the API endpoints using Postman:
 }
 ```
 
-7. For classifying an image with a PyTorch model:
+8. For classifying an image with a PyTorch model:
 
 ```json
 {
@@ -75,7 +82,7 @@ To test the API endpoints using Postman:
 }
 ```
 
-8. For classifying an image with a preTrained tensorflow model:
+9. For classifying an image with a preTrained tensorflow model:
 
 ```json
 {
@@ -83,7 +90,7 @@ To test the API endpoints using Postman:
 }
 ```
 
-9. For classifying an image with a preTrained pytorch model:
+10. For classifying an image with a preTrained pytorch model:
 
 ```json
 {
@@ -91,24 +98,22 @@ To test the API endpoints using Postman:
 }
 ```
 
-10. Click on the 'Send' button to make the request. The server's response will be displayed in Postman.
+11. Click on the 'Send' button to make the request. The server's response will be displayed in Postman.
 
 ## Usage
 
-To use the services, you need to have Docker installed. Each service within the repository has its own Dockerfile for building and running the API:
+To use the services, you need to have Docker and docker-compose installed. Each service within the repository has its own Dockerfile and docker-compose for building and running the API:
 
 ### Building and Running model-hosting
 
 ```bash
-docker build -t model-hosting-api .
-docker run -p 8000:8000 model-hosting-api
+docker compose-up
 ```
 
 ### Building and Running preTrained-model-hosting
 
 ```bash
-docker build -t pretrained-model-hosting-api .
-docker run -p 8000:8000 pretrained-model-hosting-api
+docker compose-up
 ```
 
 The APIs for both services can be accessed at `http://localhost:8000` after the containers are up and running.
@@ -119,4 +124,4 @@ This README provides all necessary information to understand, set up, and deploy
 
 ## Conclusion
 
-With this repository, you have a comprehensive solution for model hosting and image classification that caters to both custom and pre-trained models, all within a single, streamlined API system.
+With this repository, you have a comprehensive solution for model hosting and image classification that caters to both custom and pre-trained models, all within a single, streamlined API system with security.
