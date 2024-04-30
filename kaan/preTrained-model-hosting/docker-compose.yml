@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  myapp:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRETAPIKEY=YOUR_API_KEY
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    depends_on:
+      - myapp
