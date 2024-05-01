@@ -79,7 +79,7 @@ async def perform_classification(image_url):
         {"label": class_name, "score": f"{prob:.2f}%"} for class_name, (model_name, prob) in sorted_predictions
     ]
     
-    return {"Predictions": formatted_predictions}
+    return {"Combined Predictions": formatted_predictions}
 
 @router.post("/ptclassify/")
 async def classify_image(image_data: ImageUrl):
