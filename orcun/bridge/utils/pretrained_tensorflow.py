@@ -1,5 +1,5 @@
-
-from fastapi import APIRouter, HTTPException
+from fastapi import FastAPI, HTTPException, Form
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pydantic import BaseModel
 from keras.applications.resnet50 import ResNet50, preprocess_input as preprocess_resnet
 from keras.applications.vgg16 import VGG16, preprocess_input as preprocess_vgg
@@ -13,13 +13,12 @@ import requests
 from io import BytesIO
 import numpy as np
 
-
-
+app = FastAPI()
 
 resnet_model = ResNet50(weights="imagenet")
 vgg_model = VGG16(weights="imagenet")
 mobilenet_model = MobileNet(weights="imagenet")
-nasnet_model = NASNetMobile(weights="imagenet")  
+nasnet_model = NASNetMobile(weights="imagenet")
 densenet_model = DenseNet201(weights="imagenet")
 
 def preprocess_image(img_data, model_name):
@@ -53,6 +52,13 @@ def predict_image(img_data, model, model_name):
     except Exception as e:
         raise ValueError(f"Prediction failed: {str(e)}")
 
+def process_model_prediction(model, model_name, img_data):
+    try:
+        preds = predict_image(img_data, model, model_name)
+        return preds
+    except ValueError as e:
+        return []
+
 def combine_predictions(image_url):
     try:
         response = requests.get(image_url)
@@ -62,15 +68,14 @@ def combine_predictions(image_url):
         raise HTTPException(status_code=400, detail=f"Image request failed: {str(e)}")
 
     all_preds = []
-    for model, model_name in zip(
-        [resnet_model, vgg_model, mobilenet_model, nasnet_model, densenet_model],
-        ["resnet", "vgg", "mobilenet", "nasnet", "densenet"]
-    ):
-        try:
-            preds = predict_image(img_data, model, model_name)
+    with ThreadPoolExecutor() as executor:
+        futures = [executor.submit(process_model_prediction, model, model_name, img_data) for model, model_name in zip(
+            [resnet_model, vgg_model, mobilenet_model, nasnet_model, densenet_model],
+            ["resnet", "vgg", "mobilenet", "nasnet", "densenet"]
+        )]
+        for future in as_completed(futures):
+            preds = future.result()
             all_preds.extend(preds)
-        except ValueError as e:
-            continue
 
     if not all_preds:
         raise HTTPException(status_code=500, detail="All model predictions failed.")
@@ -83,4 +88,4 @@ def combine_predictions(image_url):
     sorted_predictions = sorted(combined_predictions.items(), key=lambda item: item[1], reverse=True)[:6]
     formatted_predictions = [{"label": label, "score": f"{score:.2%}"} for label, score in sorted_predictions]
 
-    return formatted_predictions
+    return {"Combined Predictions": formatted_predictions}

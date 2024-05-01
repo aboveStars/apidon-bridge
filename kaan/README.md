@@ -1,6 +1,6 @@
 # Unified Model Hosting API
 
-This repository provides a unified API for hosting and classifying images using both custom and pre-trained machine learning models. It combines the `model-hosting` and `preTrained-model-hosting` directories under a shared API framework built with FastAPI.
+This repository provides a unified API for hosting and classifying images using both custom and pre-trained machine learning models with parallel processing. It combines the `model-hosting` and `preTrained-model-hosting` directories under a shared API framework built with FastAPI.
 
 ## Project Structure
 
@@ -45,7 +45,7 @@ This repository provides a unified API for hosting and classifying images using 
 ## Features
 
 - **Custom Model Hosting**: The `/model-hosting` service allows users to upload and classify images using their own ML models.
-- **Pre-Trained Model Hosting**: The `/preTrained-model-hosting`service offers image classification using pre-trained TensorFlow and Pytorch models.
+- **Pre-Trained Model Hosting**: The `/preTrained-model-hosting`service offers image classification using pre-trained TensorFlow and Pytorch models with parallel processing for both TensorFlow and PyTorch predictions, improving response time and efficiency.
 
 ## Endpoints
 

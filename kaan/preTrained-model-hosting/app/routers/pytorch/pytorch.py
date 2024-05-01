@@ -6,10 +6,11 @@ from PIL import Image
 import requests
 from io import BytesIO
 import json
+from concurrent.futures import ThreadPoolExecutor
 
 router = APIRouter(
     prefix="/classify",
-    tags=['classify']
+    tags=['Pytorch']
 )
 
 class ImageUrl(BaseModel):
@@ -46,32 +47,39 @@ def load_model(model_name):
 with open('app/routers/pytorch/imagenet_class_index.json') as f:
     idx2label = [labels[1] for labels in json.load(f).values()]
 
+def model_predict(model_name, image_tensor):
+    model = load_model(model_name)
+    with torch.no_grad():
+        out = model(image_tensor)
+    probs = torch.nn.functional.softmax(out, dim=1)
+    top_probs, top_classes = torch.topk(probs, 5)
+    return top_probs, top_classes
+
 async def perform_classification(image_url):
     image_tensor = get_preprocessed_image_tensor(image_url)
     model_names = ['efficientnet_v2_s', 'convnext_tiny', 'swin_transformer_tiny', 'mobilenet_v2', 'resnet50']
     
     consolidated_predictions = {}
     
-    for model_name in model_names:
-        model = load_model(model_name)
-        with torch.no_grad():
-            out = model(image_tensor)
-        probs = torch.nn.functional.softmax(out, dim=1)
-        top_probs, top_classes = torch.topk(probs, 5)
+    with ThreadPoolExecutor(max_workers=len(model_names)) as executor:
+        futures = {executor.submit(model_predict, model_name, image_tensor): model_name for model_name in model_names}
         
-        for i in range(top_probs.size(1)):
-            class_name = idx2label[top_classes[0][i]]
-            prob = top_probs[0][i].item() * 100
-            if class_name not in consolidated_predictions or prob > consolidated_predictions[class_name][1]:
-                consolidated_predictions[class_name] = (model_name, prob)
-                
+        for future in futures:
+            model_name = futures[future]
+            top_probs, top_classes = future.result()
+            for i in range(top_probs.size(1)):
+                class_name = idx2label[top_classes[0][i]]
+                prob = top_probs[0][i].item() * 100
+                if class_name not in consolidated_predictions or prob > consolidated_predictions[class_name][1]:
+                    consolidated_predictions[class_name] = (model_name, prob)
+                    
     sorted_predictions = sorted(consolidated_predictions.items(), key=lambda item: item[1][1], reverse=True)[:6]
     
-    combined_predictions = [
+    formatted_predictions = [
         {"label": class_name, "score": f"{prob:.2f}%"} for class_name, (model_name, prob) in sorted_predictions
     ]
     
-    return {"Combined Predictions": combined_predictions}
+    return {"Combined Predictions": formatted_predictions}
 
 @router.post("/ptclassify/")
 async def classify_image(image_data: ImageUrl):

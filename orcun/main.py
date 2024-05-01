@@ -12,6 +12,7 @@ from bridge.utils import pretrained_pytorch
 import bridge.utils.pretrained_tensorflow as pretrained_tensorflow
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
+import time
 
 app = FastAPI()
 
@@ -58,10 +59,19 @@ async def upload_models(url: str = Form(...), path: str = Form(...), api_key: st
         print(e)
 
 @app.post("/pretrained_tensorflow_classify/")
-async def tf_classify_image(image_url:str = Form(...), api_key: str = Depends(validate_api_key)):
+async def tf_classify_image(image_url: str = Form(...), api_key: str = Depends(validate_api_key)):
     try:
-        predictions = pretrained_tensorflow.combine_predictions(image_url)
-        return {"Combined Predictions": predictions}
+        start_time = time.time()  # Fonksiyon başlangıç zamanını kaydet
+
+        loop = asyncio.get_event_loop()
+        predictions = await loop.run_in_executor(ThreadPoolExecutor(), pretrained_tensorflow.combine_predictions, image_url)
+
+        end_time = time.time()  # Fonksiyon bitiş zamanını kaydet
+        elapsed_time = end_time - start_time  # Geçen süreyi hesapla
+
+        print(f"Predictions completed in {elapsed_time} seconds.")  # Geçen süreyi yazdır
+
+        return predictions
     except HTTPException as http_exc:
         raise http_exc
     except Exception as exc:
@@ -70,9 +80,19 @@ async def tf_classify_image(image_url:str = Form(...), api_key: str = Depends(va
 @app.post("/pretrained_pytorch_classify")
 async def pt_classify_image(image_url: str = Form(...), api_key: str = Depends(validate_api_key)):
     try:
-        predictions = await pretrained_pytorch.classify_image(image_url)
-        return {"Combined Predictions": predictions}
+        start_time = time.time()  # Fonksiyon başlangıç zamanını kaydet
+
+        predictions = await pretrained_pytorch.perform_classification(image_url)
+
+        end_time = time.time()  # Fonksiyon bitiş zamanını kaydet
+        elapsed_time = end_time - start_time  # Geçen süreyi hesapla
+
+        print(f"Predictions completed in {elapsed_time} seconds.")  # Geçen süreyi yazdır
+
+        return predictions
     except HTTPException as http_exc:
         raise http_exc
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))
+
+     
