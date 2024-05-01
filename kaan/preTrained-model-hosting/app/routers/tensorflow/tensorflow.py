@@ -93,7 +93,7 @@ def combine_predictions(image_url):
 async def classify_image(request: ImageUrl):
     try:
         predictions = combine_predictions(request.image_url)
-        return {"Combined Predictions": predictions}
+        return {"Predictions": predictions}
     except HTTPException as http_exc:
         raise http_exc
     except Exception as exc:
