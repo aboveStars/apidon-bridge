@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from .routers import tensorflow, pytorch, tensorflow_lite, upload
 from fastapi.middleware.cors import CORSMiddleware
-
+from .utilities.middleware import APIKeyMiddleware
 app = FastAPI()
 
 origins = ["*"]
@@ -14,6 +14,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(APIKeyMiddleware)
 
 app.include_router(upload.router)
 
