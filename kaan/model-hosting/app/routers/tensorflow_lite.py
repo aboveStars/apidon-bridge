@@ -10,7 +10,7 @@ import os
 
 class ClassificationRequest(BaseModel):
     image_url: str
-    model_path_url: str
+    model_path: str
 
 img_height = 180
 img_width = 180
@@ -53,7 +53,7 @@ async def classify(request: ClassificationRequest):
         raise e
 
     model_dir = os.path.join("/app", "data")
-    model_path = os.path.join(model_dir, request.model_path_url)
+    model_path = os.path.join(model_dir, request.model_path)
         
     if not os.path.isfile(model_path):
         raise HTTPException(status_code=404, detail=f"Model file does not exist at {model_path}")
@@ -82,10 +82,10 @@ async def classify(request: ClassificationRequest):
             predicted_class_name = class_names[top_k_indices.numpy()[i]]
             probability_percent = top_k_values.numpy()[i] * 100
             top_predictions.append({
-                "class_name": predicted_class_name,
-                "probability": probability_percent
+                "label": predicted_class_name,
+                "score": probability_percent
             })
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to process prediction results: {str(e)}")
 
-    return {"top_predictions": top_predictions}
+    return {"predictions": top_predictions}

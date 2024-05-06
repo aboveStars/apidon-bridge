@@ -1,12 +1,15 @@
-version: '3'
+version: '3.8'
 
 services:
   myapp:
     build: .
+    image: myimage
     ports:
       - "8000:8000"
+    volumes:
+      - /apidon:/app/data
     environment:
-      - SECRETAPIKEY=YOUR_API_KEY
+      - SECRETAPIKEY=8GcgX5F_vnV5NoU-9uMyGp0Ma7aVckRJCYDcGYZJAOQ
 
   nginx:
     image: nginx:latest

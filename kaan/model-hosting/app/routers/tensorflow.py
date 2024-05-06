@@ -8,7 +8,7 @@ import requests
 
 class ClassificationRequest(BaseModel):
     image_url: str
-    model_path_url: str
+    model_path: str
 
 
 img_height = 128
@@ -33,7 +33,7 @@ def preprocess_image(url):
 async def classify(request: ClassificationRequest):
     try:
         img_array = preprocess_image(request.image_url)
-        model = load_model(f"/app/data/{request.model_path_url}")
+        model = load_model(f"/app/data/{request.model_path}")
     except HTTPException as e:
         raise e
     except Exception as e:
@@ -49,7 +49,7 @@ async def classify(request: ClassificationRequest):
             class_name = class_names[top_k_indices.numpy()[i]]
             probability = top_k_values.numpy()[i] * 100
             response_data["predictions"].append(
-                {"class_name": class_name, "probability": f"{probability:.2f}%"}
+                {"label": class_name, "score": f"{probability:.2f}%"}
             )
         return response_data
     except Exception as e:
