@@ -1,45 +1,35 @@
 from fastapi import HTTPException
 from pydantic import BaseModel
-from keras.models import load_model
-import tensorflow as tf
-import numpy as np
 from PIL import Image
 from io import BytesIO
+import tensorflow as tf
+import numpy as np
 import requests
+import json
 import os
 
 class ClassificationRequest(BaseModel):
     image_url: str
     model_path: str
 
-img_height = 180
-img_width = 180
-
-class_names = [
-    'abraham_grampa_simpson', 'agnes_skinner', 'apu_nahasapeemapetilon', 
-    'barney_gumble', 'bart_simpson', 'carl_carlson', 'charles_montgomery_burns', 
-    'chief_wiggum', 'cletus_spuckler', 'comic_book_guy', 'edna_krabappel', 
-    'groundskeeper_willie', 'homer_simpson', 'kent_brockman', 'krusty_the_clown', 
-    'lenny_leonard', 'lisa_simpson', 'maggie_simpson', 'marge_simpson', 'martin_prince', 
-    'mayor_quimby', 'milhouse_van_houten', 'moe_szyslak', 'ned_flanders', 'nelson_muntz', 
-    'patty_bouvier', 'principal_skinner', 'professor_john_frink', 'rainier_wolfcastle', 
-    'ralph_wiggum', 'selma_bouvier', 'sideshow_bob', 'sideshow_mel', 'snake_jailbird', 
-    'waylon_smithers'
-]
+def load_labels_from_json(json_path):
+    try:
+        with open(json_path, 'r') as file:
+            data = json.load(file)
+            labels = data['labels']
+        return labels
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail=f"Label file not found at {json_path}.")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error loading labels from JSON at {json_path}: {str(e)}")
 
 def preprocess_image_tflite(image_url):
     try:
         response = requests.get(image_url)
         response.raise_for_status()
-    except requests.HTTPError as http_err:
-        raise HTTPException(status_code=400, detail=f"HTTP error occurred while retrieving image: {http_err}")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"An error occurred while retrieving image: {str(e)}")
-
-    try:
         img = Image.open(BytesIO(response.content))
         img = img.convert("RGB")
-        img = img.resize((img_height, img_width))
+        img = img.resize((180, 180))
         img_array = np.array(img).astype(np.float32)
         img_array = np.expand_dims(img_array, axis=0)
         return img_array
@@ -53,18 +43,18 @@ async def classify(request: ClassificationRequest):
         raise e
 
     model_dir = os.path.join("/app", "data")
-    model_path = os.path.join(model_dir, request.model_path)
+    normalized_model_path = '/' + request.model_path.strip('/')
+    full_model_path = f"{model_dir}{normalized_model_path}"
+    full_labels_path = os.path.splitext(full_model_path)[0] + '.json'
+
+    labels = load_labels_from_json(full_labels_path)
         
-    if not os.path.isfile(model_path):
-        raise HTTPException(status_code=404, detail=f"Model file does not exist at {model_path}")
+    if not os.path.isfile(full_model_path):
+        raise HTTPException(status_code=404, detail=f"Model file does not exist at {full_model_path}")
 
     try:
-        interpreter = tf.lite.Interpreter(model_path=model_path)
+        interpreter = tf.lite.Interpreter(model_path=full_model_path)
         interpreter.allocate_tensors()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to load TensorFlow Lite model: {str(e)}")
-
-    try:
         input_details = interpreter.get_input_details()
         interpreter.set_tensor(input_details[0]['index'], img_array)
         interpreter.invoke()
@@ -79,10 +69,10 @@ async def classify(request: ClassificationRequest):
         top_k_values, top_k_indices = tf.nn.top_k(score_lite, k=5)
         top_predictions = []
         for i in range(5):
-            predicted_class_name = class_names[top_k_indices.numpy()[i]]
+            label = labels[top_k_indices.numpy()[i]]
             probability_percent = top_k_values.numpy()[i] * 100
             top_predictions.append({
-                "label": predicted_class_name,
+                "label": label,
                 "score": probability_percent
             })
     except Exception as e:

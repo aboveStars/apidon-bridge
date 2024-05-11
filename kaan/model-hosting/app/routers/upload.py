@@ -17,10 +17,12 @@ class ModelUploadRequest(BaseModel):
 
 @router.post("/")
 async def upload_model(request: ModelUploadRequest):
-    model_filename = os.path.basename(request.model_path)
+    normalized_model_path = '/' + request.model_path.strip('/')
+
+    model_filename = os.path.basename(normalized_model_path)
     label_filename = os.path.splitext(model_filename)[0] + ".json"
 
-    prefixed_model_path = os.path.join("/app/data", request.model_path)
+    prefixed_model_path = f'/app/data{normalized_model_path}'
     prefixed_label_path = os.path.join(os.path.dirname(prefixed_model_path), label_filename)
     
     directory = os.path.dirname(prefixed_model_path)
