@@ -40,7 +40,7 @@ def preprocess_image(image_url):
 async def classify(request: ClassificationRequest):
     try:
         img_array = preprocess_image(request.image_url)
-        normalized_model_path = '/' + request.model_path_url.strip('/')
+        normalized_model_path = '/' + request.model_path.strip('/')
         full_model_path = f"/app/data{normalized_model_path}"
         full_labels_path = os.path.splitext(full_model_path)[0] + '.json'
 
