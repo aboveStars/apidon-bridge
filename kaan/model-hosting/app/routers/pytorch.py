@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, APIRouter
+from fastapi import HTTPException
 from pydantic import BaseModel
 from PIL import Image
 from io import BytesIO
@@ -10,8 +10,6 @@ import torch.nn as nn
 import json
 import os
 
-app = FastAPI()
-
 class ClassificationRequest(BaseModel):
     image_url: str
     model_path: str
@@ -19,7 +17,8 @@ class ClassificationRequest(BaseModel):
 def load_labels_from_json(json_path):
     try:
         with open(json_path, 'r') as file:
-            labels = json.load(file)
+            data = json.load(file)
+            labels = data['labels']
         return labels
     except FileNotFoundError:
         raise HTTPException(status_code=404, detail=f"Label file not found at {json_path}.")
@@ -27,7 +26,9 @@ def load_labels_from_json(json_path):
         raise HTTPException(status_code=500, detail=f"Error loading labels from JSON at {json_path}: {str(e)}")
 
 def initialize_model(model_path, num_classes=None):
-    full_model_path = f'/app/data/{model_path}'
+    normalized_model_path = '/' + model_path.strip('/')
+
+    full_model_path = f'/app/data{normalized_model_path}'
     full_labels_path = os.path.splitext(full_model_path)[0] + '.json'
 
     try:
@@ -55,7 +56,7 @@ def initialize_model(model_path, num_classes=None):
 def preprocess_image(image_url):
     try:
         response = requests.get(image_url)
-        response.raise_for_status()  
+        response.raise_for_status()
 
         image = Image.open(BytesIO(response.content))
         if image.mode != 'RGB':
@@ -90,7 +91,7 @@ def classify_image(image, model, labels):
         top_predictions = []
         for i in range(5):
             top_predictions.append({
-                "label": labels[str(indices[0][i].item())],
+                "label": labels[indices[0][i].item()],
                 "score": probs[0][i].item() * 100
             })
 
