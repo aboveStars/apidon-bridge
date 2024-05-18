@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from .routers import tensorflow, pytorch, tensorflow_lite, upload
 from fastapi.middleware.cors import CORSMiddleware
 from .utilities.middleware import APIKeyMiddleware
+
 app = FastAPI()
 
 origins = ["*"]
@@ -15,12 +16,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.add_middleware(APIKeyMiddleware)
-
 app.include_router(upload.router)
 
 class ClassifyRequest(BaseModel):
     image_url: str
-    model_path_url: str
+    model_path: str
 
 @app.get("/")
 def root():
@@ -28,11 +28,11 @@ def root():
 
 @app.post("/classify")
 async def classify(request: ClassifyRequest):
-    if request.model_path_url.endswith('.h5'):
+    if request.model_path.endswith('.h5'):
         return await tensorflow.classify(request)
-    elif request.model_path_url.endswith('.pth'):
+    elif request.model_path.endswith('.pth'):
         return await pytorch.classify(request)
-    elif request.model_path_url.endswith('.tflite'):
+    elif request.model_path.endswith('.tflite'):
         return await tensorflow_lite.classify(request)
     else:
         raise HTTPException(status_code=400, detail="Unsupported model extension. Please provide a model path with .h5, .pth, or .tflite extension.")
