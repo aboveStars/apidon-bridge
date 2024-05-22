@@ -1,6 +1,5 @@
 from fastapi import FastAPI, HTTPException, Form
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from pydantic import BaseModel
 import torch
 from torchvision import models, transforms
 from PIL import Image
@@ -8,7 +7,8 @@ import requests
 from io import BytesIO
 import json
 
-app = FastAPI()
+
+
 
 def get_preprocessed_image_tensor(url):
     response = requests.get(url)
@@ -37,6 +37,7 @@ def load_model(model_name):
     model = model_func(pretrained=True)
     model.eval()
     return model
+
 
 with open('/app/bridge/utils/imagenet_class_index.json') as f:
     idx2label = [labels[1] for labels in json.load(f).values()]
