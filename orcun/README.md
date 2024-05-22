@@ -13,7 +13,7 @@
     - [CLASSIFY](#classify)
 
 ## APIDON-BRIDGE
-APIDON BRIDGE enables easy deployment of PyTorch, TensorFlow Lite,TensorFlow and pretrained TensorFlow models with a FastAPI backend, featuring automatic model download and save functionality.
+APIDON BRIDGE enables easy deployment of PyTorch, TensorFlow Lite,TensorFlow and pretrained TensorFlow models with a FastAPI backend, featuring automatic model and save functionality.
 
 
 
