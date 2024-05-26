@@ -9,8 +9,7 @@ import os
 import aiofiles
 import aiohttp
 
-img_height = 128
-img_width = 128
+
 
 
 
@@ -28,7 +27,7 @@ async def load_labels_from_json(json_path):
         raise HTTPException(status_code=500, detail=f"Error loading labels from JSON at {json_path}: {str(e)}")
     
 
-async def preprocess_image(url):
+async def preprocess_image(url,img_height,img_width):
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
@@ -51,7 +50,9 @@ async def preprocess_image(url):
 
 
 
-async def classify(image_url: str = Form(...),model_path_url:str = Form(...)):
+async def classify(image_url: str = Form(...),model_path_url:str = Form(...),img_height:str = Form(...),img_width:str = Form(...)):
+    img_height = int(img_height)
+    img_width = int(img_width)
     try:
         full_model_path = "/app/data" + model_path_url 
         full_labels_path = os.path.split(full_model_path)[0] + '/label.json'
@@ -65,7 +66,7 @@ async def classify(image_url: str = Form(...),model_path_url:str = Form(...)):
 
     
     try:
-        img_array = await preprocess_image(image_url)
+        img_array = await preprocess_image(image_url,img_height,img_width)
         model = load_model(f"/app/data{model_path_url}")
         
     except HTTPException as e:

@@ -42,16 +42,20 @@ def validate_api_key(api_key: str = Depends(api_key_header)):
 
 @mou.get("/")
 def root():
-    return {"message": "WELCOME TO APIDON"}
+    return {"message": "welcome to apidon"}
 
 @mou.post("/classify")
 async def classify(image_url: str = Form(...),
                    model_path_url: str = Form(...), 
                    model_extension: str = Form(...),
-                   api_key:str = Depends(validate_api_key)
+                   api_key:str = Depends(validate_api_key),
+                   img_height:str = Form(...),
+                   img_width:str = Form(...)
                    ):
+    img_height = int(img_height)
+    img_width = int(img_width)
     if model_extension == ".h5":
-        return await tensorflow.classify(image_url, model_path_url)
+        return await tensorflow.classify(image_url, model_path_url,img_height,img_width)
     elif model_extension == ".pth":
         return await pytorch.classify(image_url, model_path_url)
     elif model_extension == ".tflite":
