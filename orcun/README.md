@@ -25,6 +25,8 @@ Endpoint to classify an image using a specified model.
 - `image_url` (str): URL of the image to be classified.
 - `model_path_url` (str): URL where the model is stored.
 - `model_extension` (str): The file extension of the model (e.g., .h5, .pth).
+- `img_width` (str): Width of image to be classified.
+- `img_height` (str): Height of image to be classified.
 
 **Example Request:**
 ```http
