@@ -1,128 +1,141 @@
-## TABLE OF CONTENTS
-- [APIDON-BRIDGE](#apidon-bridge)
-  - [REQUIREMENTS](#requirements)
-  - [SETUP AND INSTALLATION](#setup-and-installation)
-    - [INSTALL THE NECESSARY PYTHON PACKAGES](#install-the-necessary-python-packages)
-    - [START THE FASTAPI SERVER WITH THIS COMMAND](#start-the-fastapi-server-with-this-command)
-  - [DOCKER CONTAINER SET-UP](#docker-container-set-up)
-    - [HOW TO USE DOCKERFILE](#how-to-use-dockerfile)
-  - [KNOWN ISSUES](#known-issues) 
-  - [CONCLUSION](#conclusion) 
-  - [API FEATURES](#api-features)
-    - [MODEL DOWNLOAD AND STORAGE](#model-download-and-storage)
-    - [CLASSIFY](#classify)
+# Classification API Documentation
 
-## APIDON-BRIDGE
-APIDON BRIDGE enables easy deployment of PyTorch, TensorFlow Lite,TensorFlow and pretrained TensorFlow models with a FastAPI backend, featuring automatic model download and save functionality.
+Welcome to the Classification API! This API provides various endpoints for classifying images using different models and allows for uploading new models to be used for classification. Below you will find detailed information on how to use each endpoint.
 
+## Authentication
 
+All POST requests require an API key in the request headers under the 'Authorization' title.
 
-### MODEL DOWNLOAD AND STORAGE
-APIDON-BRIDGE now includes an API endpoint that allows you to download model files and save them to a specified directory on your computer.
-
-Endpoint: *http://127.0.0.1:8000/upload_model*
-When sending a POST request to the /upload_model endpoint, include the following parameters:
-
-*url: The URL where the model file is located.*
-*path: The local directory path where you want to save the model file.*
-
-
-### CLASSIFY
-To make predictions on image classification models, you can send a POST request to the following endpoint using Postman or any other HTTP client:
-
-Endpoint: *http://127.0.0.1:8000/classify*
-When sending a POST request to the /classify endpoint, include the following parameters:
-
-*model_path_url: The URL where the model file is located.*
-*model_extension: The extension of the model file.*
-*image_url: The URL of the image you wish to classify.*
-
-To make predictions on *pretrained tensorflow and pytorch classification* models, you should send a POST request to another endpoint.
-Pretrained model endpoint: *http://127.0.0.1:8000/pretrained_tensorflow_classify* 
-                           *http://127.0.0.1:8000/pretrained_pytorch_classify*
-Parameters:
-*image_url : The URL of the image you wish to classify.*
-
-
-
-## REQUIREMENTS
-- Python 3.8 or higher (recommended: 3.10 for optimal compatibility)
-- FastAPI
-- An HTTP client for API interaction (e.g., Postman, cURL)
-
-## SETUP AND INSTALLATION
-First, clone the repository or download the source code to your local machine. Then, follow these steps to set up your environment:
-
-### INSTALL THE NECESSARY PYTHON PACKAGES
-```bash
-pip install -r requirements.txt
+Example:
 ```
-START THE FASTAPI SERVER WITH THIS COMMAND
-```bash
-
-uvicorn hosting.main:app --reload
-```
-This command starts a local development server that automatically reloads upon any file changes, making it ideal for development purposes.
-
-## DOCKER CONTAINER SET-UP
-
-For deploying APIDON-BRIDGE on a remote server using Docker, use the provided Dockerfile to build and run the container. The Dockerfile contains all necessary instructions to create a containerized environment for the API.
-
-## HOW TO USE DOCKERFILE
-Follow these steps to build and run your Docker container:
-
-Ensure Docker is installed on your machine.
-Navigate to the project directory containing the Dockerfile.
-Build the Docker image:
-```bash
-
-docker build -t <container-name> .
-```
-Run the Docker container:
-```bash
-
-docker run  -p 8000:8000 <container_location>:<local_location> -it <container-name>
-
-
+Authorization: Bearer YOUR_API_KEY
 ```
 
+## Endpoints
 
-## SECURITY
+### 1. Classify Image
 
+Endpoint to classify an image using a specified model.
 
-### OBTAINING SSL CERTIFICATES AND CONFIGURING HTTPS WITH NGINX
-To secure your APIDON-BRIDGE API with SSL certificates and enable HTTPS, you can use Let's Encrypt and Certbot. Here's a step-by-step guide:
+**URL:** `/classify`
 
-Install Certbot: Ensure Certbot is installed on your server. You can typically install it using your package manager. For example, on Ubuntu, you can use:
-```sudo apt-get install certbot python3-certbot-nginx```
+**Method:** `POST`
 
-Obtain SSL Certificates: Use Certbot to obtain SSL certificates for your domain. Replace example.com with your actual domain name:
-```sudo certbot certonly --nginx -d example.com```
+**Request Body (form-data):**
+- `image_url` (str): URL of the image to be classified.
+- `model_path_url` (str): URL where the model is stored.
+- `model_extension` (str): The file extension of the model (e.g., .h5, .pth).
+- `img_width` (str): Width of image to be classified.
+- `img_height` (str): Height of image to be classified.
 
-Certbot will automatically configure Nginx to use the obtained SSL certificates.
-Verify SSL Configuration: After obtaining the SSL certificates, Certbot should automatically update your Nginx configuration to enable HTTPS. You can verify the configuration by checking your Nginx configuration files in /etc/nginx/sites-available.
-Restart Nginx: Once the SSL certificates are obtained and the Nginx configuration is updated, restart Nginx to apply the changes:
-```sudo systemctl restart nginx```
+**Example Request:**
+```http
+POST /classify HTTP/1.1
+Host: api.yourdomain.com
+Authorization: Bearer YOUR_API_KEY
+Content-Type: multipart/form-data
 
-Your APIDON-BRIDGE API should now be accessible via HTTPS, providing a secure connection between clients and your server.
+image_url=https://example.com/image.jpg
+model_path_url=https://example.com/model.h5
+model_extension=.h5
+```
 
-### API KEY AUTHENTICATION
-To restrict access to your APIDON-BRIDGE API endpoints using API keys, you can integrate API key authentication into your FastAPI application. Here's a basic implementation:
+### 2. Upload Model
 
-Generate API Key: Generate an API key for each user or application that needs access to your API.
-Secure Storage: Store the generated API keys securely, ensuring they are not exposed to unauthorized users.
-API Key Verification: Implement middleware in your FastAPI application to verify API keys. This middleware should intercept incoming requests, extract the API key from the request headers or query parameters, and validate it against the stored API keys.
-Access Control: Based on the API key validation, grant or deny access to the requested API endpoints.
-By implementing API key authentication, you can control and secure access to your APIDON-BRIDGE API, allowing only authorized users to interact with your endpoints.
+Endpoint to upload a new model to the API.
 
+**URL:** `/upload_model`
 
+**Method:** `POST`
 
-## KNOWN ISSUES
+**Request Body (form-data):**
+- `url` (str): URL of the model to be uploaded.
+- `path` (str): Location where the model should be saved.
+- `label_url` (str): URL of the label file associated with the model.
 
-Users may encounter package-related issues when using the Tensorflow model. To avoid these problems, it is recommended to use Python version 3.10 or 3.11.
+**Example Request:**
+```http
+POST /upload_model HTTP/1.1
+Host: api.yourdomain.com
+Authorization: Bearer YOUR_API_KEY
+Content-Type: multipart/form-data
 
-## CONCLUSION
+url=https://example.com/new_model.h5
+path=/models/new_model.h5
+label_url=https://example.com/labels.txt
+```
 
-APIDON-BRIDGE offers a streamlined approach to deploying machine learning models, ensuring ease of access and reliability. The additional feature for downloading and saving model files broadens the utility of the service, making it even more convenient for users managing multiple models. For further assistance or to report issues, please consult the documentation or raise an issue on the project repository.
+### 3. Classify Image with Pretrained TensorFlow Model
 
+Endpoint to classify an image using a pretrained TensorFlow model.
 
+**URL:** `/pretrained_tensorflow_model`
+
+**Method:** `POST`
+
+**Request Body (form-data):**
+- `image_url` (str): URL of the image to be classified.
+
+**Example Request:**
+```http
+POST /pretrained_tensorflow_model HTTP/1.1
+Host: api.yourdomain.com
+Authorization: Bearer YOUR_API_KEY
+Content-Type: multipart/form-data
+
+image_url=https://example.com/image.jpg
+```
+
+### 4. Classify Image with Pretrained PyTorch Model
+
+Endpoint to classify an image using a pretrained PyTorch model.
+
+**URL:** `/pretrained_pytorch_model`
+
+**Method:** `POST`
+
+**Request Body (form-data):**
+- `image_url` (str): URL of the image to be classified.
+
+**Example Request:**
+```http
+POST /pretrained_pytorch_model HTTP/1.1
+Host: api.yourdomain.com
+Authorization: Bearer YOUR_API_KEY
+Content-Type: multipart/form-data
+
+image_url=https://example.com/image.jpg
+```
+
+## Response
+
+All endpoints will return a JSON object containing the classification results or the status of the model upload. The structure of the response will vary depending on the endpoint and the operation performed.
+
+**Example Response:**
+```json
+{
+  "status": "success",
+  "data": {
+    "classification": "cat",
+    "confidence": 0.95
+  }
+}
+```
+
+## Error Handling
+
+In case of an error, the API will return an appropriate HTTP status code and a JSON object containing the error message.
+
+**Example Error Response:**
+```json
+{
+  "status": "error",
+  "message": "Invalid API key"
+}
+```
+
+## Contact
+
+For any questions or support, please contact us at support@yourdomain.com.
+
+Thank you for using the Classification API!
